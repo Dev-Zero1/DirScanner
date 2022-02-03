@@ -276,20 +276,29 @@ namespace DirScanner
 
                 //archive the old one to the DB
                 startFileScan(dirPathOld);
-                //create the new one / overwrite it.
-                File.WriteAllText(path, fileTextBox.Text);
-                //scan in the newly written one to the DB
-                startFileScan(dirPathNew);
 
-                //shows message if test file exists already
+                try {
+                    //create the new one / overwrite it.
+                    File.WriteAllText(path, fileTextBox.Text);
+                    //scan in the newly written one to the DB
+                    startFileScan(dirPathNew);
+                }  
+                catch (UnauthorizedAccessException) 
+                { Console.WriteLine($"Unable to write file {fileNameLabel.Text} at {path}"); }                           
             }
             //If it doesn't exist, Create the file at the selected directory.
             else
             {
-                File.WriteAllText(path, fileTextBox.Text);
-                string dirPathNew = dirBox.Text;
-                //then, scan it to the database.
-                startFileScan(dirPathNew);
+                try { 
+                    File.WriteAllText(path, fileTextBox.Text);
+                    string dirPathNew = dirBox.Text;
+                    //then, scan it to the database.
+                    startFileScan(dirPathNew);
+                } catch (UnauthorizedAccessException) 
+                {
+                    Console.WriteLine($"Unable to write file {fileNameLabel.Text} at {path}");
+                }
+                
             }
             //set the directory scan box back to empty.
             dirBox.Text = "";
