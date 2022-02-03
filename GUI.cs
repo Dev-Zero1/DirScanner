@@ -14,14 +14,20 @@ namespace DirScanner
     public partial class GUI : Form
     {
         private BindingSource DisplayList { get; set; }
-        int run = 0;
+        int run = 0; // stops the index changed listeners from kicking off on the first run
+
         public GUI()
         {
             InitializeComponent();
-            this.Text = "DirectoryScanner v1.0";    
+            this.Text = "DirectoryScanner v2.0";    
             setCUCodeBox();
             setFileTypeBox();
+
+            //now that we have index values to use for thefiletype and CUcode boxes,
+            //we can let the program run as normal for listener events
             run = 1;
+
+            //update the DGV with the query data filters.
             updateFileDGV();
         }
         //---------------------------------------------------------------------------//
@@ -29,11 +35,14 @@ namespace DirScanner
         //---------------------------------------------------------------------------//
         private void updateFileDGV()
         {
+            //grab the correct query by conditions, then update the DGV
             string query = getQueryFilesByTypeCUandSearch();
-            Console.WriteLine("query =" + query);
             setDataTableDGV(query, fileDGV);
         }
 
+        //ALL files is folders/files with any ext.
+        //Files only excludes folders
+        //otherwise, try to use the filename search, cuSelection box, and the fileType conditions.
         private string getQueryFilesByTypeCUandSearch()
         {
             string query = "";
@@ -49,6 +58,7 @@ namespace DirScanner
             {
                 query = $"select * from files where fileName LIKE '%{searchText.Text}%' and fileDir LIKE '%{cuSelectionBox.SelectedItem.ToString().Replace('\\', '%')}%' and fileType = '{fileTypeSelection.SelectedItem.ToString()}'";
             }
+            //all queries order by fileScannedAt most recent.
             query += " order by fileScannedAt desc";
             return query;
         }
@@ -96,6 +106,9 @@ namespace DirScanner
             // dgv.Columns[2].Resizable = DataGridViewTriState.True;
             dgv.Columns[1].Width = 50;
             dgv.Columns[2].Width = 50;
+            
+            dgv.Columns[4].DefaultCellStyle.Format = "MM-dd-yyyy hh:mm:ss tt";
+            dgv.Columns[5].DefaultCellStyle.Format = "MM-dd-yyyy hh:mm:ss tt";
             ChangeDGVTimeToLocal(dgv, 6);
         }
 
@@ -103,6 +116,7 @@ namespace DirScanner
         {
             connection c = new connection();
             DisplayList = new BindingSource();
+
             c.dt = new DataTable();       
             c.DisplayDBtoDGV(c.Conn, query);
             if (c.dt.Rows.Count >= 1)
@@ -123,6 +137,7 @@ namespace DirScanner
         //---------------------------------------------------------------------------//
         public String ConvertUTCDateTimeToLocal(string DT)
         {
+            //given a string, return the local version of it.
             System.Globalization.CultureInfo ci = System.Globalization.CultureInfo.CurrentCulture;
             return DateTime.Parse(DT, ci).ToLocalTime().ToString();
         }
@@ -134,6 +149,7 @@ namespace DirScanner
         {
             for (int i = 0; i < dgv.Rows.Count; i++)
             {
+                //for each column specified in the list, change the time to local
                 foreach (int col in columns)
                 {
                     //Modify each row's value from UTC to local for display only
@@ -141,15 +157,22 @@ namespace DirScanner
                 }
             }
 
-            //format the column dataTime
+            //format the column dataTime for each column in the list.
             foreach (int col in columns)
             {
-                dgv.Columns[col].DefaultCellStyle.Format = "MM/dd/yyyy hh:mm:ss tt";
+                dgv.Columns[col].DefaultCellStyle.Format = "MM-dd-yyyy hh:mm:ss tt";
             }
         }
         //---------------------------------------------------------------------------//
         //Button and Change Events
         //---------------------------------------------------------------------------//
+        private void fileDGV_SelectionChanged(object sender, EventArgs e)
+        {
+            updateFileText();
+        }
+
+        //avoid running these the first run so we can populate the box selection for CU/FileType indexes.
+        
         public void searchFilesForInput()
         {
             if (run != 0)
@@ -158,20 +181,11 @@ namespace DirScanner
                 setDataTableDGV(query, fileDGV);
             }
         }
-
+        //any changes to index or text will update the datagridview query and produce a new results table
         private void cuSelectionBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (run != 0) 
-            {
-                searchFilesForInput();
-            }
-
-        }
-        private void fileDGV_SelectionChanged(object sender, EventArgs e)
-        {
-            updateFileText();
-        }
-
+            if (run != 0)   searchFilesForInput();     
+        }      
         private void fileTypeSelection_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (run != 0)    updateFileDGV();
@@ -217,6 +231,7 @@ namespace DirScanner
             var fID = fileDGV.Rows[fileDGV.CurrentRow.Index].Cells[0].Value;
             string fileName = fileDGV.Rows[fileDGV.CurrentRow.Index].Cells[1].Value.ToString();
             string path = dirBox.Text;
+
             fileInteract();
             if(path != "")  cuSelectionBox.Items.Add(path);
 
@@ -252,30 +267,34 @@ namespace DirScanner
         private void fileInteract() {
             //path of file as chosen by user directory input and selected file at runtime
             string path = dirBox.Text + fileNameLabel.Text;
-
-            
+            //if the file exists at this path
             if (File.Exists(path))
-            {            
+            {      
+                //get ready to scan the old and new files for records
                 string dirPathNew = dirBox.Text;
                 string dirPathOld = fileDGV.Rows[fileDGV.CurrentRow.Index].Cells[2].Value.ToString();
 
-                //archive the old one
+                //archive the old one to the DB
                 startFileScan(dirPathOld);
+                //create the new one / overwrite it.
                 File.WriteAllText(path, fileTextBox.Text);
-                //scan in the newly written one
+                //scan in the newly written one to the DB
                 startFileScan(dirPathNew);
 
                 //shows message if test file exists already
             }
-            //Create the file if it doesn't exist
+            //If it doesn't exist, Create the file at the selected directory.
             else
             {
                 File.WriteAllText(path, fileTextBox.Text);
                 string dirPathNew = dirBox.Text;
+                //then, scan it to the database.
                 startFileScan(dirPathNew);
             }
+            //set the directory scan box back to empty.
             dirBox.Text = "";
         }
+        //allows the user to select and standardize the path directory format
         private void dirSelectDialog() 
         {
             using (var folder = new FolderBrowserDialog())
@@ -291,9 +310,11 @@ namespace DirScanner
                         dirBox.Text += "\\";                  
                 }
             }
+            //after the selection, switch the button back so we can save the file here.
             DirSelect.Text = "Save File";
         }
 
+        //if the user cancels, change the text so the event triggers correctly
         private void cancelBt_Click(object sender, EventArgs e)
         {
             if (DirSelect.Text == "Select Directory") 
@@ -305,26 +326,32 @@ namespace DirScanner
             }
         }
 
+        //if the user wants to clicks the button to scan a directory
         private void scanDirBt_Click(object sender, EventArgs e)
         {
+            //check if the directory box is empty first
+            if(dirBox.Text != "") 
+            { 
+                //set our path, add it to the selection options for queries.
                 string path = dirBox.Text;
                 if (path != "") cuSelectionBox.Items.Add(path);
+
+                //set up the Process call to run the python script and do the search at this location
                 string progPath = @"C:\Python\python.exe";
                 string args = string.Format(@"C:\Python\directoryScraper.py {0} {1} {2}", dirBox.Text, fileNameLabel.Text, "scanDir");
+
                 RunProcess(progPath, args); //scan the odirectory.
+                //change the box to use 
                 cuSelectionBox.SelectedIndex = cuSelectionBox.Items.Count-1;
+            }
         }
 
-        private void searchDirText_TextChanged(object sender, EventArgs e)
-        {
-
-        }
 
 
 
 
         /*        
-        public void Update()
+        public void QueryByParam()
         {
             connection c = new connection();
 

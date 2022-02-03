@@ -102,7 +102,7 @@ namespace DirScanner
             Conn.Close();
         }
         //---------------------------------------------------------------------------//
-        //
+        //Data queries for int results, list results, datetime, and string results.
         //---------------------------------------------------------------------------//
         public int GetIntQuery(MySqlConnection connection, string cmd)
         {
@@ -223,7 +223,6 @@ namespace DirScanner
                     }
                 }
             }
-
             //Close the connection and reader
             Conn.Close();
             row.Close();
@@ -291,7 +290,6 @@ namespace DirScanner
                     }
                 }
             }
-
             //Close the connection and reader
             Conn.Close();
             row.Close();
@@ -305,110 +303,3 @@ namespace DirScanner
 
     }//end Class - Connection
 }//end Namespace - DesktopSchedulingApp_WGU
-
-
-/*
-//---------------------------------------------------------------------------//
-//
-//---------------------------------------------------------------------------//
-        public void Start() {
-            try
-            {
-
-                ShowData("SHOW tables");
-                ShowData("SELECT userId, userName From user");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-                Console.WriteLine("Can not open connection x! ");
-            }
-            finally
-            {
-                //Console.WriteLine("Can not open connection ! ");
-                if (Conn.State == System.Data.ConnectionState.Open)
-                {
-                    //Conn.Close();
-                }
-            }
-        }
-    //---------------------------------------------------------------------------//
-    //
-    //---------------------------------------------------------------------------//
-        public void ShowData(String cmd)
-        {
-            //Runs the query and outputs the list in the console.
-            /*  foreach (object item in Data = GetListOfQuery2(Conn, cmd))
-              {
-                  Console.WriteLine(item.ToString());
-              }
-  
-//---------------------------------------------------------------------------//
-//
-//---------------------------------------------------------------------------//
-        }
-
-
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-        public void RunQuery(MySqlConnection connection, string cmd)
-        {
-           // List<string> QueryResult = new List<string>();
-            Conn.Open();
-
-            MySqlCommand    cmdName = new MySqlCommand(cmd, connection);
-            MySqlDataReader reader  = cmdName.ExecuteReader(CommandBehavior.CloseConnection);
-
-
-            while (reader.Read())
-            {
-               
-                for (int i = 0; i < reader.FieldCount; i++)
-                {
-                    Type DT = reader.GetFieldType(i);
-                    if ((DT == typeof(System.Int32) || DT == typeof(System.Int64)))
-                    {
-                        Console.Write(reader.GetInt64(i));
-
-                    }
-                    else if (DT == typeof(System.String))
-                    {
-                        Console.Write(reader.GetString(i));
-                    }
-                    else if (DT == typeof(System.Double))
-                    {
-                        Console.Write(reader.GetDouble(i));
-                    }
-                    else if (DT == typeof(System.DateTime))
-                    {
-                        Console.Write(reader.GetDateTime(i));
-                    }
-                }
-            }
-
-            Conn.Close();
-            reader.Close();
-
-           // return QueryResult;
-        }
-*/
