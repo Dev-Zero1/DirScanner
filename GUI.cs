@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using System.Diagnostics;
 namespace DirScanner
 {
     public partial class GUI : Form
@@ -39,15 +40,15 @@ namespace DirScanner
             string query = "";
             if (fileTypeSelection.SelectedItem.ToString() == "ALL")
             {
-                query = $"select * from files where fileName LIKE '%{searchText.Text}%' and fileDir LIKE '%{cuSelectionBox.SelectedItem.ToString()}%'";
+                query = $"select * from files where fileName LIKE '%{searchText.Text}%' and fileDir LIKE '%{cuSelectionBox.SelectedItem.ToString().Replace('\\','%')}%'";
             }
             else if (fileTypeSelection.SelectedItem.ToString() == "Files Only")
             {
-                query = $"select * from files where fileName LIKE '%{searchText.Text}%' and fileDir LIKE '%{cuSelectionBox.SelectedItem.ToString()}%' and fileType != 'folder'";
+                query = $"select * from files where fileName LIKE '%{searchText.Text}%' and fileDir LIKE '%{cuSelectionBox.SelectedItem.ToString().Replace('\\', '%')}%' and fileType != 'folder'";
             }
             else
             {
-                query = $"select * from files where fileName LIKE '%{searchText.Text}%' and fileDir LIKE '%{cuSelectionBox.SelectedItem.ToString()}%' and fileType = '{fileTypeSelection.SelectedItem.ToString()}'";
+                query = $"select * from files where fileName LIKE '%{searchText.Text}%' and fileDir LIKE '%{cuSelectionBox.SelectedItem.ToString().Replace('\\', '%')}%' and fileType = '{fileTypeSelection.SelectedItem.ToString()}'";
             }
             query += " order by fileScannedAt desc";
             return query;
@@ -62,7 +63,7 @@ namespace DirScanner
 
         private void setFileTypeBox() 
         {
-            string[] list = { "ALL", "Files Only", "folder","txt", "log", "xml", "ach", "dat", "config", "ini", "html", "htm", "css", "js", "bat", "cif", "cs", "resx", "md", "csv" };
+            string[] list = { "ALL", "Files Only", "folder","txt", "log", "xml", "ach", "dat", "config", "ini", "html", "htm", "css", "js", "bat", "cif", "cs", "resx", "md", "csv","py" };
             foreach (string item in list)  fileTypeSelection.Items.Add(item);
             fileTypeSelection.SelectedIndex = 0;
         }
@@ -175,17 +176,63 @@ namespace DirScanner
             var fID = fileDGV.Rows[fileDGV.CurrentRow.Index].Cells[0].Value;
             string fileName = fileDGV.Rows[fileDGV.CurrentRow.Index].Cells[1].Value.ToString();
             string path = dirBox.Text;
-
-            //check if file exists @ given path
-            //if exists,
-                //verify on sql server
-                    //push old
-                    //replace in dir
-            //else open write & close
-            //push data to database to record the change
+            fileInteract();
+            if(path != "")  cuSelectionBox.Items.Add(path);
 
             DirSelect.Text = "Select Directory";
+            dirBox.Text = "";        
+        }
 
+        private void startFileScan(string dirPath) 
+        {            
+                string progPath = @"C:\Python\python.exe";  
+                string args = string.Format(@"C:\Python\directoryScraper.py {0} {1} {2}", dirPath, fileNameLabel.Text, "scanFile");
+                RunProcess(progPath,args); //scan the old one first for changes to archive it              
+        }
+
+        private void RunProcess(string progPath, string args)
+        {               
+                    Process p = new Process();
+                    p.StartInfo = new ProcessStartInfo(progPath, args);
+            
+                    p.StartInfo.UseShellExecute = true;
+                    //p.StartInfo.RedirectStandardOutput = true;
+                    Process.Start(p.StartInfo);
+
+            try { p.WaitForExit(100000);}
+            catch (InvalidOperationException ex)  {
+            Console.WriteLine("Process Failing on " + ex.Message.ToString());
+                
+            } 
+        }
+
+
+        private void fileInteract() {
+            //path of file as chosen by user directory input and selected file at runtime
+            string path = dirBox.Text + fileNameLabel.Text;
+
+            
+            if (File.Exists(path))
+            {            
+                string dirPathNew = dirBox.Text;
+                string dirPathOld = fileDGV.Rows[fileDGV.CurrentRow.Index].Cells[2].Value.ToString();
+
+                //archive the old one
+                startFileScan(dirPathOld);
+                File.WriteAllText(path, fileTextBox.Text);
+                //scan in the newly written one
+                startFileScan(dirPathNew);
+
+                //shows message if test file exists already
+            }
+            //Create the file if it doesn't exist
+            else
+            {
+                File.WriteAllText(path, fileTextBox.Text);
+                string dirPathNew = dirBox.Text;
+                startFileScan(dirPathNew);
+            }
+            dirBox.Text = "";
         }
         private void dirSelectDialog() 
         {
@@ -214,6 +261,21 @@ namespace DirScanner
                 DirSelect.Text = "Select Directory";
                 dirBox.Text = "";
             }
+        }
+
+        private void scanDirBt_Click(object sender, EventArgs e)
+        {
+                string path = dirBox.Text;
+                if (path != "") cuSelectionBox.Items.Add(path);
+                string progPath = @"C:\Python\python.exe";
+                string args = string.Format(@"C:\Python\directoryScraper.py {0} {1} {2}", dirBox.Text, fileNameLabel.Text, "scanDir");
+                RunProcess(progPath, args); //scan the odirectory.
+                cuSelectionBox.SelectedIndex = cuSelectionBox.Items.Count-1;
+        }
+
+        private void searchDirText_TextChanged(object sender, EventArgs e)
+        {
+
         }
 
 
