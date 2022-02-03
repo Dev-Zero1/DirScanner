@@ -18,16 +18,15 @@ namespace DirScanner
         public GUI()
         {
             InitializeComponent();
-            this.Text = "DirectoryScanner v1.0";
-            Console.WriteLine("!!!!!!!!!!!!!!");
-            
+            this.Text = "DirectoryScanner v1.0";    
             setCUCodeBox();
             setFileTypeBox();
             run = 1;
             updateFileDGV();
-            Console.WriteLine("run =" + run.ToString());
-
         }
+        //---------------------------------------------------------------------------//
+        // DataGridView update / query functions
+        //---------------------------------------------------------------------------//
         private void updateFileDGV()
         {
             string query = getQueryFilesByTypeCUandSearch();
@@ -53,7 +52,9 @@ namespace DirScanner
             query += " order by fileScannedAt desc";
             return query;
         }
-
+        //---------------------------------------------------------------------------//
+        // Dropdown selection initialization functions
+        //---------------------------------------------------------------------------//
         private void setCUCodeBox() 
         {
             string[] list = { "CCCU", "ECCU", "EXCU", "MYCU", "TRYCU" };
@@ -67,7 +68,9 @@ namespace DirScanner
             foreach (string item in list)  fileTypeSelection.Items.Add(item);
             fileTypeSelection.SelectedIndex = 0;
         }
-
+        //---------------------------------------------------------------------------//
+        // DataGridView functions
+        //---------------------------------------------------------------------------//
         private void SetupBaseDGVFormat(DataGridView dgv)
         {
 
@@ -79,23 +82,21 @@ namespace DirScanner
 
             dgv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgv.MultiSelect = false;
-           // dgv.ReadOnly = true;
-            //dgv.AutoResizeColumns();
-           // dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            // dgv.ReadOnly = true;
+            // dgv.AutoResizeColumns();
+            // dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            
             dgv.RowHeadersVisible = true;
             dgv.AllowUserToAddRows = false;
             dgv.AllowUserToOrderColumns = false;
-            dgv.AllowUserToResizeColumns = true;
+            //dgv.AllowUserToResizeColumns = true;
             dgv.AllowUserToDeleteRows = false;
-            dgv.Columns[1].Resizable = DataGridViewTriState.True;
-            dgv.Columns[2].Resizable = DataGridViewTriState.True;
-
-
-        }
-
-       
-        private void displayData() { 
-        
+             
+            // dgv.Columns[1].Resizable = DataGridViewTriState.True;
+            // dgv.Columns[2].Resizable = DataGridViewTriState.True;
+            dgv.Columns[1].Width = 50;
+            dgv.Columns[2].Width = 50;
+            ChangeDGVTimeToLocal(dgv, 6);
         }
 
         private void setDataTableDGV( string query, DataGridView dgv) 
@@ -115,6 +116,46 @@ namespace DirScanner
             }
             else {
                 dgv.DataSource = new DataTable();             
+            }
+        }
+        //---------------------------------------------------------------------------//
+        //returns a string of the UTC converted to local time
+        //---------------------------------------------------------------------------//
+        public String ConvertUTCDateTimeToLocal(string DT)
+        {
+            System.Globalization.CultureInfo ci = System.Globalization.CultureInfo.CurrentCulture;
+            return DateTime.Parse(DT, ci).ToLocalTime().ToString();
+        }
+        //---------------------------------------------------------------------------//
+        //given a DataGridView and columns, convert the displayed time to local
+        //then, change each column to format the date as '2021-10-08 00:00:00 AM'
+        //---------------------------------------------------------------------------//
+        public void ChangeDGVTimeToLocal(DataGridView dgv, params int[] columns)
+        {
+            for (int i = 0; i < dgv.Rows.Count; i++)
+            {
+                foreach (int col in columns)
+                {
+                    //Modify each row's value from UTC to local for display only
+                    dgv.Rows[i].Cells[col].Value = ConvertUTCDateTimeToLocal(dgv.Rows[i].Cells[col].Value.ToString());
+                }
+            }
+
+            //format the column dataTime
+            foreach (int col in columns)
+            {
+                dgv.Columns[col].DefaultCellStyle.Format = "MM/dd/yyyy hh:mm:ss tt";
+            }
+        }
+        //---------------------------------------------------------------------------//
+        //Button and Change Events
+        //---------------------------------------------------------------------------//
+        public void searchFilesForInput()
+        {
+            if (run != 0)
+            {
+                string query = getQueryFilesByTypeCUandSearch();
+                setDataTableDGV(query, fileDGV);
             }
         }
 
@@ -141,15 +182,12 @@ namespace DirScanner
             if (run != 0)   updateFileDGV();
         }
 
-        public void searchFilesForInput()
-        {
-            if (run != 0)
-            {
-                string query = getQueryFilesByTypeCUandSearch();
-                setDataTableDGV(query, fileDGV);
-            }
-        }
+      
 
+
+        //---------------------------------------------------------------------------//
+        // File IO functions and python integrated functions
+        //---------------------------------------------------------------------------//
         private void updateFileText()
         {           
             if (fileDGV.Rows.Count >= 1)
