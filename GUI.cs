@@ -211,6 +211,9 @@ namespace DirScanner
         }
         private void saveFileToDirectory() 
         {
+            DialogResult dr = MessageBox.Show($"Save this version of {fileNameLabel.Text} to {dirBox.Text}?", "Delete Confirmation", MessageBoxButtons.YesNo);
+            if (dr == DialogResult.Yes)
+            {        
             var fID = fileDGV.Rows[fileDGV.CurrentRow.Index].Cells[0].Value;
             string fileName = fileDGV.Rows[fileDGV.CurrentRow.Index].Cells[1].Value.ToString();
             string path = dirBox.Text;
@@ -218,7 +221,8 @@ namespace DirScanner
             if(path != "")  cuSelectionBox.Items.Add(path);
 
             DirSelect.Text = "Select Directory";
-            dirBox.Text = "";        
+            dirBox.Text = "";
+            }
         }
 
         private void startFileScan(string dirPath) 
