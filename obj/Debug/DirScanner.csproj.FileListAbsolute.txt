@@ -30,3 +30,4 @@ C:\Users\legen\source\repos\DirScanner\bin\Debug\System.Numerics.Vectors.xml
 C:\Users\legen\source\repos\DirScanner\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
 C:\Users\legen\source\repos\DirScanner\obj\Debug\DirScanner.exe
 C:\Users\legen\source\repos\DirScanner\obj\Debug\DirScanner.pdb
+C:\Users\legen\source\repos\DirScanner\obj\Debug\DirScanner.Launch.resources

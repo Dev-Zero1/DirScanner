@@ -97,10 +97,19 @@
     <Compile Include="GUI.Designer.cs">
       <DependentUpon>GUI.cs</DependentUpon>
     </Compile>
+    <Compile Include="Launch.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Launch.Designer.cs">
+      <DependentUpon>Launch.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="GUI.resx">
       <DependentUpon>GUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Launch.resx">
+      <DependentUpon>Launch.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

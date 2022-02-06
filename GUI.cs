@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Windows.Forms;
 using System.Diagnostics;
+
 namespace DirScanner
 {
     public partial class GUI : Form
@@ -14,7 +15,9 @@ namespace DirScanner
         public GUI()
         {
             InitializeComponent();
-            this.Text = "DirectoryScanner v2.0";    
+            this.Text = "DirectoryScanner v2.0";
+
+            initApp();
             setCUCodeBox();
             setFileTypeBox();
 
@@ -23,8 +26,26 @@ namespace DirScanner
             run = 1;
 
             //update the DGV with the query data filters.
-            updateFileDGV();
+           // updateFileDGV();
             SetupBaseDGVFormat(fileDGV);
+
+        }
+
+        private void initApp() 
+        {
+            writeLoginToFile();
+
+            setDataTableDGV("SELECT * FROM files", fileDGV);
+            
+        }
+        private void writeLoginToFile() 
+        {
+            if (AppendToFileReturnSuccessState("C:\\DirectoryScanner\\","DS_Logins.txt",("TestUser\t\t @ \t"+DateTime.Now.ToString()+" PST\n")))
+            {
+                Console.WriteLine("Running init login scan");
+                RunPythonLoginScan();
+            }
+            else { ShowMsgBox("Access Denied - folder permissions required from Administrator. Try another folder."); }
         }
         //---------------------------------------------------------------------------//
         // DataGridView update / query functions
@@ -63,7 +84,8 @@ namespace DirScanner
 //---------------------------------------------------------------------------//
         private void setCUCodeBox() 
         {
-            string[] list = { "CCCU", "ECCU", "EXCU", "MYCU", "TRYCU" };
+           // string[] list = { "CCCU", "ECCU", "EXCU", "MYCU", "TRYCU","C:\\DirectoryScanner\\"};
+            string[] list = {"C:\\DirectoryScanner\\" };
             foreach (string item in list) cuSelectionBox.Items.Add(item);
             cuSelectionBox.SelectedIndex = 0;
         }
@@ -228,6 +250,7 @@ namespace DirScanner
                 updateCodeBox();
                 //set up the Process call to run the python script and do the search at this location
                 RunPythonScanProcess(dirBox.Text, "scanDir");
+                ShowMsgBox("Directory Scan Finished.");
             }
             else { ShowMsgBox("Directory Selection cannot be empty."); }
         }
@@ -316,50 +339,103 @@ namespace DirScanner
                 dirBox.Text = "";
             }
         }
-        private void ArchiveFileIn(string dir) 
-        {
-            RunPythonScanProcess(dir, "scanFile");
-        }
 
-        private void writeFile() 
+        //---------------------------------------------------------------------------//
+        //  
+        //---------------------------------------------------------------------------//       
+
+
+        private bool writeFileReturnSuccessState()
         {
             string path = dirBox.Text + fileNameLabel.Text;
             try
             {
                 //create the new one / overwrite it.
-                File.WriteAllText(path, fileTextBox.Text);              
+                File.WriteAllText(path, fileTextBox.Text);               
             }
             catch (UnauthorizedAccessException ex)
-            { Console.WriteLine($"Unable to write file {fileNameLabel.Text} at {path}"); }
+            { Console.WriteLine($"Unable to write file {fileNameLabel.Text} at {path}"); return false; }
+
+            return true;
         }
-//---------------------------------------------------------------------------//
-//  
-//---------------------------------------------------------------------------//       
+
+        private bool AppendToFileReturnSuccessState(string dir, string fileName, string text)
+        {
+            string path = dir + fileName;
+            try
+            {
+                //create the new one / overwrite it.
+                File.AppendAllText(path, text);
+               // File.WriteAllText(path, text);
+            }
+            catch (UnauthorizedAccessException ex)
+            { Console.WriteLine($"Unable to write file {fileName} at {path}"); return false; }
+
+            return true;
+        }
+
+
         private void fileInteract() {
             //path of file as chosen by user directory input and selected file at runtime
             string path = dirBox.Text + fileNameLabel.Text;
 
             //if the file exists at this path
             if (File.Exists(path))
-            {      
+            {
                 //archive the old one to the DB
                 ArchiveFileIn(getSelectedFileDir());
-                writeFile();
+            }
+            //only archive the new one if it sucessfully writes.
+            if (writeFileReturnSuccessState())
+            {
                 ArchiveFileIn(dirBox.Text);
             }
-            //If it doesn't exist, Create the file at the selected directory.
-            else
-            {                           
-                    writeFile();
-                    //then, scan it to the database.
-                    ArchiveFileIn(dirBox.Text);               
-            }
-            //set the directory scan box back to empty.
-            dirBox.Text = "";
+            else { ShowMsgBox("Access Denied - folder permissions required from Administrator. Try another folder."); }          
         }
-//---------------------------------------------------------------------------//
-//  
-//---------------------------------------------------------------------------//
+
+        private void ArchiveFileIn(string dir)
+        {
+            RunPythonScanProcess(dir, "scanFile");
+        }
+
+      
+
+        private void RunPythonScanProcess(string dir, string mode)
+        {
+            string progPath = @"C:\Python\python.exe";
+            string args = string.Format(@"C:\Python\directoryScraper.py {0} {1} {2}", dir, fileNameLabel.Text, mode);
+
+            RunProcess(progPath, args); //scan the directory.
+        }
+        private void RunPythonLoginScan() 
+        {
+            string progPath = @"C:\Python\python.exe";
+            string dir = @"C:\DirectoryScanner\";
+            string args = string.Format(@"C:\Python\directoryScraper.py {0} {1} {2}", dir, "DS_Logins.txt", "scanFile");
+
+            RunProcess(progPath, args); //scan the directory.
+            Console.WriteLine("initial python scan finished.");
+        }
+
+        private void RunProcess(string progPath, string args)
+        {
+            Console.WriteLine("Running process!");
+            Process p = new Process();
+            p.StartInfo = new ProcessStartInfo(progPath, args);
+
+            p.StartInfo.UseShellExecute = true;
+          //  p.StartInfo.RedirectStandardOutput = true;
+            Process.Start(p.StartInfo);
+
+            try { p.WaitForExit(100); }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine("Process Failing on " + ex.Message.ToString());
+            }
+        }
+        //---------------------------------------------------------------------------//
+        //  
+        //---------------------------------------------------------------------------//
 
         //allows the user to select and standardize the path directory format
         private void dirSelectDialog() 
@@ -390,32 +466,7 @@ namespace DirScanner
             System.Windows.Forms.MessageBox.Show(msg);
         }
 
-        private void RunPythonScanProcess(string dir, string mode) 
-        {
-            string progPath = @"C:\Python\python.exe";
-            string args = string.Format(@"C:\Python\directoryScraper.py {0} {1} {2}", dir, fileNameLabel.Text, mode);
-
-            RunProcess(progPath, args); //scan the directory.
-        }
-        //if the user wants to clicks the button to scan a directory
-       
-
-        private void RunProcess(string progPath, string args)
-        {
-            Console.WriteLine("Running process!");
-            Process p = new Process();
-            p.StartInfo = new ProcessStartInfo(progPath, args);
-
-            p.StartInfo.UseShellExecute = true;
-            //p.StartInfo.RedirectStandardOutput = true;
-            Process.Start(p.StartInfo);
-
-            try { p.WaitForExit(100); }
-            catch (InvalidOperationException ex)
-            {
-                Console.WriteLine("Process Failing on " + ex.Message.ToString());
-            }
-        }
+        
 //---------------------------------------------------------------------------//
 //  
 //---------------------------------------------------------------------------//
