@@ -179,24 +179,41 @@
   </metadata>
   <data name="cancelBt.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
-        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
+        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
+        BXgvhRcrAAAAAElFTkSuQmCC
 </value>
   </data>
+  <data name="addDirIcon.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAA1
+        1AAANdQBXmXlCAAAAdlJREFUSEutlUtLw0AUha8iCD5QECsiqKArEREplDZN+xf9H+JWVy5UcFlcFMFN
+        sY+kj7TVFtvaNBjP6cNaOq0k5MLHhOHeczKZmRuZE0vAFCfhiJt0Z5BBzitYZoHX2AeG2HMN2sgpA98G
+        pth6SSE8ZmCwygKvsQPKEMlMif5FpAi2WeA1QqCAFeSUwiOYI7LLAq8xMvjvE5lgiwVeg5+I4rMNPuMO
+        cipgnQUInryVIb/BBGtIHrwBvhXpQSg9JTzCSTSRQ7jRxJIF6C1KFVgA2raeBnlpaQVJh4vyfFGSXMTs
+        044XINSZEh7zDZN3rKQOmhN3phV3pRzFJ5wsCB7lZJAoJ4NEORkkyskgUU4GidycXsvlUUruzh6kod32
+        cZNXfZraE0beBXUxj7CTMKQWM/FsgDr4ABao9kG0AB84sv1yrAFeup68hJmsEnelq98jpwOygE1vBC8p
+        63NANgH7DlvDITgB5+AAVKQUrSjFSUN7RM4XYDelDnsS2QPHQ+aGgRs926AWSyGHK+AL+ooyRNgu1Ab1
+        GH+XXIEvgw1gYRNnG7Tj3CvfBvyJGDDgqVAb9HQcQ7HBGgu8Bv/JGclG2kpxwo45WIGvCKG300AtTgYG
+        3UG6KkR+AGJv/ButCB7sAAAAAElFTkSuQmCC
+</value>
+  </data>
+  <metadata name="$this.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>25</value>
+    <value>73</value>
   </metadata>
 </root>

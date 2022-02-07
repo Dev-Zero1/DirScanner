@@ -74,6 +74,7 @@ namespace DirScanner
             this.Controls.Add(this.name);
             this.Controls.Add(this.progressBar);
             this.Name = "Launch";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Launch";
             this.Load += new System.EventHandler(this.Launch_Load);
             ((System.ComponentModel.ISupportInitialize)(this.name)).EndInit();

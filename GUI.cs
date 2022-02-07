@@ -4,18 +4,21 @@ using System.Data;
 using System.IO;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace DirScanner
 {
     public partial class GUI : Form
     {
         private BindingSource DisplayList { get; set; }
+        List <Process> ProcessArray; 
         int run = 0; // stops the index changed listeners from kicking off on the first run
 
         public GUI()
         {
             InitializeComponent();
             this.Text = "DirectoryScanner v2.0";
+            ProcessArray = new List<Process>();
 
             initApp();
             setCUCodeBox();
@@ -26,7 +29,7 @@ namespace DirScanner
             run = 1;
 
             //update the DGV with the query data filters.
-           // updateFileDGV();
+            updateFileDGV();
             SetupBaseDGVFormat(fileDGV);
 
         }
@@ -92,7 +95,7 @@ namespace DirScanner
 
         private void setFileTypeBox() 
         {
-            string[] list = { "ALL", "Files Only", "folder","txt", "log", "xml", "ach", "dat", "config", "ini", "html", "htm", "css", "js", "bat", "cif", "cs", "resx", "md", "csv","py" };
+            string[] list = { "ALL", "Files Only", "folder","txt", "log", "xml", "ach", "dat", "config", "ini", "html", "htm", "css", "js", "bat", "cif", "cs", "resx", "md", "csv","py","java" };
             foreach (string item in list)  fileTypeSelection.Items.Add(item);
             fileTypeSelection.SelectedIndex = 0;
         }
@@ -238,8 +241,15 @@ namespace DirScanner
         private void addCode_Click(object sender, EventArgs e)
         {
             string path = dirBox.Text;
-            if (path != "") updateCodeBox();
+            if (path != "") { updateCodeBox(); }
+            else { ShowMsgBox("Directory Selection cannot be empty"); }
 
+        }
+        private void addDirIcon_Click(object sender, EventArgs e)
+        {
+            string path = dirBox.Text;
+            if (path != "") { updateCodeBox(); }
+            else { ShowMsgBox("Directory Selection cannot be empty"); }
         }
         private void scanDirBt_Click(object sender, EventArgs e)
         {
@@ -251,6 +261,19 @@ namespace DirScanner
                 //set up the Process call to run the python script and do the search at this location
                 RunPythonScanProcess(dirBox.Text, "scanDir");
                 ShowMsgBox("Directory Scan Finished.");
+            }
+            else { ShowMsgBox("Directory Selection cannot be empty."); }
+        }
+        private void startDirMonitorBt_Click(object sender, EventArgs e)
+        {
+            
+            if (dirBox.Text != "")
+            {
+                //set our path, add it to the selection options for queries.             
+               // updateCodeBox();
+                //set up the Process call to run the python script and do the search at this location
+                RunPythonScanProcess(dirBox.Text, "auto");
+                //ShowMsgBox("Directory Scan Finished.");
             }
             else { ShowMsgBox("Directory Selection cannot be empty."); }
         }
@@ -310,7 +333,6 @@ namespace DirScanner
         private void updateCodeBox()
         {
             string path = dirBox.Text;
-            Console.WriteLine($"Evaluating: {cuSelectionBox.Items.Contains(path.ToString())}");
 
             if (cuSelectionBox.Items.Contains(path.ToString()) == false)
             {
@@ -419,19 +441,20 @@ namespace DirScanner
 
         private void RunProcess(string progPath, string args)
         {
-            Console.WriteLine("Running process!");
+           // Console.WriteLine("Running process!");
             Process p = new Process();
             p.StartInfo = new ProcessStartInfo(progPath, args);
 
             p.StartInfo.UseShellExecute = true;
-          //  p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.RedirectStandardOutput = false;
             Process.Start(p.StartInfo);
-
+           // ProcessArray.Add(p);
             try { p.WaitForExit(100); }
             catch (InvalidOperationException ex)
             {
                 Console.WriteLine("Process Failing on " + ex.Message.ToString());
             }
+           
         }
         //---------------------------------------------------------------------------//
         //  
@@ -466,10 +489,16 @@ namespace DirScanner
             System.Windows.Forms.MessageBox.Show(msg);
         }
 
-        
-//---------------------------------------------------------------------------//
-//  
-//---------------------------------------------------------------------------//
+
+
+
+
+
+
+
+        //---------------------------------------------------------------------------//
+        //  
+        //---------------------------------------------------------------------------//
 
 
 
