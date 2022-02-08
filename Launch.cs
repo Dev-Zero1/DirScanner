@@ -37,44 +37,7 @@ namespace DirScanner
             GotoScreen(2, this);           
         }
 
-        private async void AnimateLauncher2() 
-        {
-
-            logo.Left = 374;
-            logo.Top = 31;
-            bool alive = true;
-            int picX = 0;
-
-            await Task.Delay(TimeSpan.FromSeconds(0.05));
-            while (alive) 
-            {
-               
-
-                logo.Show();
-
-                await Task.Delay(TimeSpan.FromSeconds(0.00099));
-                //if the arrow left hand ever hits the other side at the same spot
-                if (logo.Left <= 70 && logo.Top == 31)
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(1.0));
-                    logo.Left = 374;
-                    logo.Top = 168;
-                }
-                if (logo.Left <= 70 && logo.Top == 168)
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(1.0));
-                    logo.Left = 374;
-                    logo.Top = 168;
-                    //alive = false;
-                    logo.Hide();
-                    logo.Left = 374;
-                    logo.Top = 31;
-                }
-                //keep moving it to the left
-                logo.Left -= picX;
-                picX += 2;
-            }
-        }
+        
         //***********************************************************************//
         //Screen GUI and transition functions
         //***********************************************************************//

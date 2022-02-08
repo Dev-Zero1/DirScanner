@@ -233,11 +233,15 @@ namespace DirScanner
                 dirBox.Text = "";
             }
         }
+        //---------------------------------------------------------
+        //---------------------------------------------------------
         private void DirSelect_Click(object sender, EventArgs e)
         {
             if (DirSelect.Text == "Select Directory") dirSelectDialog();
             else saveFileToDirectory();
         }
+        //---------------------------------------------------------
+        //---------------------------------------------------------
         private void addCode_Click(object sender, EventArgs e)
         {
             string path = dirBox.Text;
@@ -245,12 +249,16 @@ namespace DirScanner
             else { ShowMsgBox("Directory Selection cannot be empty"); }
 
         }
+        //---------------------------------------------------------
+        //---------------------------------------------------------
         private void addDirIcon_Click(object sender, EventArgs e)
         {
             string path = dirBox.Text;
             if (path != "") { updateCodeBox(); }
             else { ShowMsgBox("Directory Selection cannot be empty"); }
         }
+        //---------------------------------------------------------
+        //---------------------------------------------------------
         private void scanDirBt_Click(object sender, EventArgs e)
         {
             //check if the directory box is empty first
@@ -260,10 +268,12 @@ namespace DirScanner
                 updateCodeBox();
                 //set up the Process call to run the python script and do the search at this location
                 RunPythonScanProcess(dirBox.Text, "scanDir");
-                ShowMsgBox("Directory Scan Finished.");
+               
             }
             else { ShowMsgBox("Directory Selection cannot be empty."); }
         }
+        //---------------------------------------------------------
+        //---------------------------------------------------------
         private void startDirMonitorBt_Click(object sender, EventArgs e)
         {
             
@@ -277,7 +287,8 @@ namespace DirScanner
             }
             else { ShowMsgBox("Directory Selection cannot be empty."); }
         }
-        //---------------------------------------------------------------------------//
+        //---------------------------------------------------------
+        //---------------------------------------------------------       
         private void dirBox_Click(object sender, EventArgs e)
         {
             dirSelectDialog();
@@ -488,12 +499,6 @@ namespace DirScanner
         {
             System.Windows.Forms.MessageBox.Show(msg);
         }
-
-
-
-
-
-
 
 
         //---------------------------------------------------------------------------//

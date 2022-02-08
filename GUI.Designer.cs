@@ -32,7 +32,6 @@ namespace DirScanner
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GUI));
             this.fileTextBox = new System.Windows.Forms.RichTextBox();
             this.cuSelectionBox = new System.Windows.Forms.ComboBox();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.fileDGV = new System.Windows.Forms.DataGridView();
             this.DirSelect = new System.Windows.Forms.Button();
             this.dirBox = new System.Windows.Forms.TextBox();
@@ -47,10 +46,11 @@ namespace DirScanner
             this.addCode = new System.Windows.Forms.Button();
             this.addDirIcon = new System.Windows.Forms.PictureBox();
             this.startDirMonitorBt = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.fileDGV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cancelBt)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.addDirIcon)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // fileTextBox
@@ -65,20 +65,11 @@ namespace DirScanner
             // cuSelectionBox
             // 
             this.cuSelectionBox.FormattingEnabled = true;
-            this.cuSelectionBox.Location = new System.Drawing.Point(366, 4);
+            this.cuSelectionBox.Location = new System.Drawing.Point(372, 4);
             this.cuSelectionBox.Name = "cuSelectionBox";
             this.cuSelectionBox.Size = new System.Drawing.Size(268, 21);
             this.cuSelectionBox.TabIndex = 1;
             this.cuSelectionBox.SelectedIndexChanged += new System.EventHandler(this.cuSelectionBox_SelectedIndexChanged);
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(170, 46);
-            this.pictureBox1.TabIndex = 2;
-            this.pictureBox1.TabStop = false;
             // 
             // fileDGV
             // 
@@ -116,7 +107,7 @@ namespace DirScanner
             // 
             // searchText
             // 
-            this.searchText.Location = new System.Drawing.Point(366, 57);
+            this.searchText.Location = new System.Drawing.Point(372, 57);
             this.searchText.Name = "searchText";
             this.searchText.Size = new System.Drawing.Size(268, 20);
             this.searchText.TabIndex = 9;
@@ -127,7 +118,8 @@ namespace DirScanner
             this.fileNameLabel.AutoSize = true;
             this.fileNameLabel.BackColor = System.Drawing.Color.Transparent;
             this.fileNameLabel.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fileNameLabel.Location = new System.Drawing.Point(796, 54);
+            this.fileNameLabel.ForeColor = System.Drawing.Color.White;
+            this.fileNameLabel.Location = new System.Drawing.Point(674, 54);
             this.fileNameLabel.Name = "fileNameLabel";
             this.fileNameLabel.Size = new System.Drawing.Size(103, 23);
             this.fileNameLabel.TabIndex = 10;
@@ -136,7 +128,7 @@ namespace DirScanner
             // fileTypeSelection
             // 
             this.fileTypeSelection.FormattingEnabled = true;
-            this.fileTypeSelection.Location = new System.Drawing.Point(513, 30);
+            this.fileTypeSelection.Location = new System.Drawing.Point(519, 30);
             this.fileTypeSelection.Name = "fileTypeSelection";
             this.fileTypeSelection.Size = new System.Drawing.Size(121, 21);
             this.fileTypeSelection.TabIndex = 11;
@@ -146,7 +138,7 @@ namespace DirScanner
             // 
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.Color.GhostWhite;
-            this.label1.Location = new System.Drawing.Point(224, 62);
+            this.label1.Location = new System.Drawing.Point(230, 60);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(136, 13);
             this.label1.TabIndex = 12;
@@ -156,7 +148,7 @@ namespace DirScanner
             // 
             this.cancelBt.BackColor = System.Drawing.Color.Transparent;
             this.cancelBt.Image = ((System.Drawing.Image)(resources.GetObject("cancelBt.Image")));
-            this.cancelBt.Location = new System.Drawing.Point(849, -1);
+            this.cancelBt.Location = new System.Drawing.Point(849, 1);
             this.cancelBt.Name = "cancelBt";
             this.cancelBt.Size = new System.Drawing.Size(25, 24);
             this.cancelBt.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -190,7 +182,7 @@ namespace DirScanner
             // 
             this.addDirIcon.BackColor = System.Drawing.Color.Transparent;
             this.addDirIcon.Image = ((System.Drawing.Image)(resources.GetObject("addDirIcon.Image")));
-            this.addDirIcon.Location = new System.Drawing.Point(661, 4);
+            this.addDirIcon.Location = new System.Drawing.Point(657, 2);
             this.addDirIcon.Name = "addDirIcon";
             this.addDirIcon.Size = new System.Drawing.Size(24, 23);
             this.addDirIcon.TabIndex = 16;
@@ -207,11 +199,22 @@ namespace DirScanner
             this.startDirMonitorBt.UseVisualStyleBackColor = true;
             this.startDirMonitorBt.Click += new System.EventHandler(this.startDirMonitorBt_Click);
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BackColor = System.Drawing.Color.Transparent;
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Location = new System.Drawing.Point(0, -1);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(229, 63);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBox1.TabIndex = 2;
+            this.pictureBox1.TabStop = false;
+            // 
             // GUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.DimGray;
+            this.BackColor = System.Drawing.Color.MidnightBlue;
             this.ClientSize = new System.Drawing.Size(1160, 567);
             this.Controls.Add(this.startDirMonitorBt);
             this.Controls.Add(this.addDirIcon);
@@ -230,10 +233,10 @@ namespace DirScanner
             this.Controls.Add(this.fileTextBox);
             this.Name = "GUI";
             this.Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.fileDGV)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.cancelBt)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.addDirIcon)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -243,7 +246,6 @@ namespace DirScanner
 
         private System.Windows.Forms.RichTextBox fileTextBox;
         private System.Windows.Forms.ComboBox cuSelectionBox;
-        private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.DataGridView fileDGV;
         private System.Windows.Forms.Button DirSelect;
         private System.Windows.Forms.TextBox dirBox;
@@ -258,6 +260,7 @@ namespace DirScanner
         private System.Windows.Forms.Button addCode;
         private System.Windows.Forms.PictureBox addDirIcon;
         private System.Windows.Forms.Button startDirMonitorBt;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
 
